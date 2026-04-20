@@ -1,86 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RealWaste Classification</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealWaste Classification</title>
+    <link rel="stylesheet" href="style.css">
 
-  <style>
+    <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #e6f4ea;
-      color: #333;
-      text-align: center;
-      padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #e6f4ea;
+        color: #333;
+        text-align: center;
+        padding: 20px;
     }
 
     header h1 {
-      color: #2b7a0b;
+        color: #2b7a0b;
     }
 
     .upload-section {
-      margin: 20px auto;
-      padding: 20px;
-      border: 2px solid #a8d5a2;
-      border-radius: 10px;
-      background-color: #f0fff4;
-      display: inline-block;
+        margin: 20px auto;
+        padding: 20px;
+        border: 2px solid #a8d5a2;
+        border-radius: 10px;
+        background-color: #f0fff4;
+        display: inline-block;
     }
 
     .upload-label, .upload-btn {
-      background-color: #2b7a0b;
-      color: white;
-      padding: 10px 15px;
-      margin: 5px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+        background-color: #2b7a0b;
+        color: white;
+        padding: 10px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
     }
 
     .upload-label:hover, .upload-btn:hover {
-      background-color: #1e5007;
+        background-color: #1e5007;
     }
 
     #preview {
-      margin-top: 10px;
-      max-width: 300px;
-      max-height: 300px;
-      border: 2px solid #a8d5a2;
-      border-radius: 5px;
+        margin-top: 10px;
+        max-width: 300px;
+        max-height: 300px;
+        border: 2px solid #a8d5a2;
+        border-radius: 5px;
     }
 
     #result {
-      margin-top: 15px;
-      font-weight: bold;
-      font-size: 1.2em;
-      color: #2b7a0b;
-      padding: 10px;
-      border-radius: 5px;
-      background-color: #d0efd0;
-      display: inline-block;
+        margin-top: 15px;
+        font-weight: bold;
+        font-size: 1.2em;
+        color: #2b7a0b;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #d0efd0;
+        display: inline-block;
     }
-  </style>
+    </style>
 </head>
 <body>
 
-  <header>
+    <header>
     <h1>Real Waste Classification</h1>
     <p>Upload an image to classify its condition</p>
-  </header>
+    </header>
 
-  <div class="upload-section">
+    <div class="upload-section">
     <label for="imageInput" class="upload-label">Choose Image</label>
     <input type="file" id="imageInput" accept="image/*" style="display:none;">
     <button id="classifyBtn" class="upload-btn">Classify</button>
     <div>
-      <img id="preview" style="display:none;">
+        <img id="preview" style="display:none;">
     </div>
-  </div>
+    </div>
 
-  <div id="result"></div>
+    <div id="result"></div>
 
-  <script>
+    <script>
     // Add Flask API
     const API_URL = 'http://localhost:5000'
     const preview = document.getElementById("preview");
@@ -89,41 +89,41 @@
     let selectedFile;
 
     const categories = [
-      'Rust', 'Pests', 'Mildew', 'Blight_Spot',
-      'Smut_Rot', 'Fusarium_Blast', 'Healthy'
+        'Rust', 'Pests', 'Mildew', 'Blight_Spot',
+        'Smut_Rot', 'Fusarium_Blast', 'Healthy'
     ];
 
     // Preview image
     document.getElementById("imageInput").addEventListener("change", (event) => {
-      selectedFile = event.target.files[0];
-      if (!selectedFile) return;
+        selectedFile = event.target.files[0];
+        if (!selectedFile) return;
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
         preview.src = e.target.result;
         preview.style.display = "block";
         resultDiv.innerHTML = "";
-      };
-      reader.readAsDataURL(selectedFile);
+        };
+        reader.readAsDataURL(selectedFile);
     });
 
     // Classify image
     classifyBtn.addEventListener("click", async () => {
-      if (!selectedFile) {
+        if (!selectedFile) {
         resultDiv.innerHTML = '<span style="color:red;"> Please select an image.</span>';
         return;
-      }
+        }
 
-      classifyBtn.disabled = true;
-      classifyBtn.textContent = "Classifying ... ";
+        classifyBtn.disabled = true;
+        classifyBtn.textContent = "Classifying ... ";
 
-      const formData = new FormData();
-      formData.append('image', selectedFile)
+        const formData = new FormData();
+        formData.append('image', selectedFile)
 
-      try {
+        try {
         const response = await fetch(`${API_URL}/predict`, {
-          method: 'POST',
-          body: formData
+            method: 'POST',
+            body: formData
         });
 
         if (!response.ok) throw new Error('Classification Failed ;-;');
@@ -137,13 +137,13 @@
 
         resultDiv.innerHTML = html;
 
-      } catch (err) {
+        } catch (err) {
         resultDiv.innerHTML = `<span style="color:red;">Error: ${err.message}. \nMake sure Flask is running!</span>`;
-      } finally {
+        } finally {
         classifyBtn.disabled = false;
         classifyBtn.textContent = "Classify";
-      }
+        }
     });
-  </script>
+    </script>
 </body>
 </html>
