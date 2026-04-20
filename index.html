@@ -6,9 +6,9 @@
     <title>RealWaste Classification</title>
     <link rel="stylesheet" href="style.css">
 
-    <style>
+        <style>
     :root {
-        --bg: #f2f5f0;
+        --bg: #f0f4f8;
         --card: #ffffff;
         --border: #b8cfe0;
         --blue-dark: #0d4a7a;
@@ -34,29 +34,11 @@
         align-items: center;
         padding: 40px 20px;
         background-image:
-        radial-gradient(circle at 10% 20%, #d4eacc44 0%, transparent 50%),
-        radial-gradient(circle at 90% 80%, #b8d9ae33 0%, transparent 50%);
+            radial-gradient(circle at 10% 20%, #cce0f544 0%, transparent 50%),
+            radial-gradient(circle at 90% 80%, #b8d4ee33 0%, transparent 50%);
     }
 
-    header {
-        text-align: center;
-        margin-bottom: 36px;
-    }
-
-    .badge {
-        display: inline-block;
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-        background: var(--blue-light);
-        border: 1px solid var(--border);
-        padding: 4px 12px;
-        border-radius: 20px;
-        margin-bottom: 12px;
-    }
-
+    header { text-align: center; margin-bottom: 36px; }
     header h1 {
         font-size: 2rem;
         font-weight: 700;
@@ -64,11 +46,7 @@
         letter-spacing: -0.02em;
     }
 
-    header p {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 0.95rem;
-    }
+    header p { margin-top: 6px; color: var(--muted); font-size: 0.95rem; }
 
     .main-card {
         background: var(--card);
@@ -77,14 +55,10 @@
         padding: 28px;
         width: 100%;
         max-width: 600px;
-        box-shadow: 0 4px 24px #1e5c0610;
+        box-shadow: 0 4px 24px #0d4a7a10;
     }
 
-    .upload-row {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
+    .upload-row { display: flex; gap: 10px; margin-bottom: 20px; }
 
     .btn {
         font-family: var(--sans);
@@ -98,24 +72,11 @@
     }
 
     .btn:active { transform: scale(0.97); }
-
-    .btn-primary {
-        background-color: var(--blue-dark);
-        color: white;
-    }
-    .btn-primary:hover { background-color: #163d04; }
-
-    .btn-secondary {
-        background-color: var(--blue-light);
-        color: var(--green-dark);
-        border: 1px solid var(--border);
-    }
-    .btn-secondary:hover { background-color: #c3e0bb; }
-
-    .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
+    .btn-primary { background-color: var(--blue-dark); color: white; }
+    .btn-primary:hover { background-color: #093a61; }
+    .btn-secondary { background-color: var(--blue-light); color: var(--blue-dark); border: 1px solid var(--border); }
+    .btn-secondary:hover { background-color: #c0d9ee; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .preview-box {
         width: 100%;
@@ -130,17 +91,8 @@
         position: relative;
     }
 
-    .preview-placeholder {
-        text-align: center;
-        color: var(--muted);
-        font-size: 0.88rem;
-    }
-
-    .preview-placeholder span {
-        display: block;
-        font-size: 2rem;
-        margin-bottom: 8px;
-    }
+    .preview-placeholder { text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .preview-placeholder span { display: block; font-size: 2rem; margin-bottom: 8px; }
 
     #preview {
         width: 100%;
@@ -150,10 +102,7 @@
         border-radius: 8px;
     }
 
-    /* Result area */
-    #result {
-        margin-top: 20px;
-    }
+    #result { margin-top: 20px; }
 
     .result-card {
         background: var(--blue-light);
@@ -171,21 +120,12 @@
         margin-bottom: 4px;
     }
 
-    .result-class {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--blue-dark);
-    }
-
-    .result-confidence {
-        margin-top: 6px;
-        font-size: 0.9rem;
-        color: var(--muted);
-    }
+    .result-class { font-size: 1.5rem; font-weight: 700; color: var(--blue-dark); }
+    .result-confidence { margin-top: 6px; font-size: 0.9rem; color: var(--muted); }
 
     .confidence-bar-wrap {
         margin-top: 10px;
-        background: #c3debb;
+        background: #b8d4ee;
         border-radius: 99px;
         height: 6px;
         overflow: hidden;
