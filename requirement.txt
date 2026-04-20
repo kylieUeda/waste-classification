@@ -1,0 +1,6 @@
+Pillow: 11.3.0
+Python: 3.9.6
+Flask: 3.1.2
+flask-cors: 6.0.1
+NumPy: 2.0.2
+tensorflow: 2.20.0
