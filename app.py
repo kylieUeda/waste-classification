@@ -14,7 +14,7 @@ import os
 app = Flask(__name__)
 CORS(app) # -> make it accessible from browsers
 
-MODEL_PATH = 'file name comes here'
+MODEL_PATH = 'waste_ENB0.keras'
 model = None
 
 CLASS_NAMES = ['Vegetation',
@@ -49,8 +49,8 @@ def process_img(image):
     # RGB - if image doesn't have 3 channel, make it three
     if img_array.shape[-1] == 4:
         img_array = img_array[:,:, :3]
-
-    img_array = (img_array - np.mean(img_array)) / np.std(img_array) # normalization
+    img_array = img_array / 255.0
+    # img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array) # Normalize to -1 to 1
     img_array = np.expand_dims(img_array, axis = 0)
 
     # Check
@@ -59,11 +59,10 @@ def process_img(image):
     print(f"Data type: {img_array.dtype}")
 
     return img_array
-
-# Test image preprocessing
-test = Image.open("test_img.png")
-processed = process_img(test)
-print(processed.shape)
+# # Test image preprocessing
+# test = Image.open("test_img.png")
+# processed = process_img(test)
+# print(processed.shape)
 
 @app.route('/RealWaste')
 def RealWaste():
