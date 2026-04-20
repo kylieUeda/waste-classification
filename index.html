@@ -7,58 +7,211 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
+    :root {
+        --bg: #f2f5f0;
+        --card: #ffffff;
+        --border: #c8d8c0;
+        --green-dark: #1e5c06;
+        --green-mid: #2e8b0e;
+        --green-light: #d6edd0;
+        --accent: #5a9e2f;
+        --text: #1a2e14;
+        --muted: #6b856b;
+        --error: #c0392b;
+        --mono: 'DM Mono', monospace;
+        --sans: 'DM Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-        font-family: Arial, sans-serif;
-        background-color: #e6f4ea;
-        color: #333;
+        font-family: var(--sans);
+        background-color: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        background-image:
+        radial-gradient(circle at 10% 20%, #d4eacc44 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, #b8d9ae33 0%, transparent 50%);
+    }
+
+    header {
         text-align: center;
-        padding: 20px;
+        margin-bottom: 36px;
+    }
+
+    .badge {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--green-light);
+        border: 1px solid var(--border);
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 12px;
     }
 
     header h1 {
-        color: #2b7a0b;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--green-dark);
+        letter-spacing: -0.02em;
     }
 
-    .upload-section {
-        margin: 20px auto;
-        padding: 20px;
-        border: 2px solid #a8d5a2;
-        border-radius: 10px;
-        background-color: #f0fff4;
-        display: inline-block;
+    header p {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.95rem;
     }
 
-    .upload-label, .upload-btn {
-        background-color: #2b7a0b;
-        color: white;
-        padding: 10px 15px;
-        margin: 5px;
+    .main-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 4px 24px #1e5c0610;
+    }
+
+    .upload-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 10px 20px;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         cursor: pointer;
+        transition: background 0.15s, transform 0.1s;
     }
 
-    .upload-label:hover, .upload-btn:hover {
-        background-color: #1e5007;
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+        background-color: var(--green-dark);
+        color: white;
+    }
+    .btn-primary:hover { background-color: #163d04; }
+
+    .btn-secondary {
+        background-color: var(--green-light);
+        color: var(--green-dark);
+        border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background-color: #c3e0bb; }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .preview-box {
+        width: 100%;
+        min-height: 220px;
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: var(--bg);
+        position: relative;
+    }
+
+    .preview-placeholder {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
+
+    .preview-placeholder span {
+        display: block;
+        font-size: 2rem;
+        margin-bottom: 8px;
     }
 
     #preview {
-        margin-top: 10px;
-        max-width: 300px;
+        width: 100%;
         max-height: 300px;
-        border: 2px solid #a8d5a2;
-        border-radius: 5px;
+        object-fit: contain;
+        display: none;
+        border-radius: 8px;
     }
 
+    /* Result area */
     #result {
-        margin-top: 15px;
-        font-weight: bold;
-        font-size: 1.2em;
-        color: #2b7a0b;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #d0efd0;
-        display: inline-block;
+        margin-top: 20px;
+    }
+
+    .result-card {
+        background: var(--green-light);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+    }
+
+    .result-label {
+        font-size: 0.72rem;
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+
+    .result-class {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--green-dark);
+    }
+
+    .result-confidence {
+        margin-top: 6px;
+        font-size: 0.9rem;
+        color: var(--muted);
+    }
+
+    .confidence-bar-wrap {
+        margin-top: 10px;
+        background: #c3debb;
+        border-radius: 99px;
+        height: 6px;
+        overflow: hidden;
+    }
+
+    .confidence-bar {
+        height: 100%;
+        background: var(--green-mid);
+        border-radius: 99px;
+        transition: width 0.5s ease;
+    }
+
+    .error-msg {
+        color: var(--error);
+        font-size: 0.9rem;
+        padding: 12px 16px;
+        background: #fdecea;
+        border: 1px solid #f5c6c2;
+        border-radius: 8px;
+    }
+
+    footer {
+        margin-top: 32px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
     }
     </style>
 </head>
@@ -66,82 +219,88 @@
 
     <header>
     <h1>Real Waste Classification</h1>
-    <p>Upload an image to classify its condition</p>
+    <p>Upload an image to identify the type of waste</p>
     </header>
 
-    <div class="upload-section">
-    <label for="imageInput" class="upload-label">Choose Image</label>
-    <input type="file" id="imageInput" accept="image/*" style="display:none;">
-    <button id="classifyBtn" class="upload-btn">Classify</button>
-    <div>
-        <img id="preview" style="display:none;">
+<div class="main-card">
+    <div class="upload-row">
+        <label for="imageInput" class="btn btn-secondary">Choose Image</label>
+        <input type="file" id="imageInput" accept="image/*" style="display:none;">
+        <button id="classifyBtn" class="btn btn-primary">Classify</button>
     </div>
+
+    <div class="preview-box">
+        <div class="preview-placeholder" id="placeholder">
+        <span>🗑️</span>
+        No image selected
+        </div>
+        <img id="preview" alt="Preview">
     </div>
 
     <div id="result"></div>
+    </div>
 
     <script>
     // Add Flask API
-    const API_URL = 'http://localhost:5000'
+    const API_URL = 'http://127.0.0.1:5000'
     const preview = document.getElementById("preview");
+    const placeholder = document.getElementById("placeholder");
     const resultDiv = document.getElementById("result");
-    const classifyBtn = document.getElementById("classifyBtn")
+    const classifyBtn = document.getElementById("classifyBtn");
     let selectedFile;
 
-    const categories = [
-        'Rust', 'Pests', 'Mildew', 'Blight_Spot',
-        'Smut_Rot', 'Fusarium_Blast', 'Healthy'
-    ];
-
-    // Preview image
     document.getElementById("imageInput").addEventListener("change", (event) => {
         selectedFile = event.target.files[0];
         if (!selectedFile) return;
 
         const reader = new FileReader();
         reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = "block";
-        resultDiv.innerHTML = "";
+            preview.src = e.target.result;
+            preview.style.display = "block";
+            placeholder.style.display = "none";
+            resultDiv.innerHTML = "";
         };
         reader.readAsDataURL(selectedFile);
     });
 
-    // Classify image
     classifyBtn.addEventListener("click", async () => {
         if (!selectedFile) {
-        resultDiv.innerHTML = '<span style="color:red;"> Please select an image.</span>';
-        return;
+            resultDiv.innerHTML = '<div class="error-msg">Please select an image first.</div>';
+            return;
         }
 
         classifyBtn.disabled = true;
-        classifyBtn.textContent = "Classifying ... ";
-
+        classifyBtn.textContent = "Classifying…";
+    
         const formData = new FormData();
-        formData.append('image', selectedFile)
-
+        formData.append('image', selectedFile);
+    
         try {
-        const response = await fetch(`${API_URL}/predict`, {
+            const response = await fetch(`${API_URL}/predict`, {
             method: 'POST',
             body: formData
-        });
+            });
 
-        if (!response.ok) throw new Error('Classification Failed ;-;');
+        if (!response.ok) throw new Error('Classification failed');
 
         const data = await response.json();
-
-
-        // Display Results
-        let html = `<h3>Predicted:\n ${data.label}</h3>`;
-        html += `<p>Confidence: ${(data.confidence * 100).toFixed(2)}%</p>`;
-
-        resultDiv.innerHTML = html;
+        const pct = (data.confidence * 100).toFixed(1); 
+        resultDiv.innerHTML = `
+            <div class="result-card">
+                <div class="result-label">Predicted Class</div>
+                <div class="result-class">${data.label}</div>
+                <div class="result-confidence">Confidence: ${pct}%</div>
+                <div class="confidence-bar-wrap">
+                <div class="confidence-bar" style="width: ${pct}%"></div>
+                </div>
+            </div>
+        `;
 
         } catch (err) {
-        resultDiv.innerHTML = `<span style="color:red;">Error: ${err.message}. \nMake sure Flask is running!</span>`;
+            resultDiv.innerHTML = `<div class="error-msg">Error: ${err.message}. Make sure Flask is running.</div>`;
         } finally {
-        classifyBtn.disabled = false;
-        classifyBtn.textContent = "Classify";
+            classifyBtn.disabled = false;
+            classifyBtn.textContent = "Classify";
         }
     });
     </script>

@@ -40,29 +40,18 @@ def load_model():
     except Exception as e:
         print(f"Error!: {e}")
 
-# Image Processing → resize, rgb, 
 def process_img(image):
-    # Resize and image and convert it to numpy array
     img = image.resize((224, 224))
-    img_array = np.array(img)
+    img_array = np.array(img).astype(np.float32)
 
-    # RGB - if image doesn't have 3 channel, make it three
-    if img_array.shape[-1] == 4:
-        img_array = img_array[:,:, :3]
-    img_array = img_array / 255.0
-    # img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array) # Normalize to -1 to 1
-    img_array = np.expand_dims(img_array, axis = 0)
+    if img_array.ndim == 2:  # grayscale
+        img_array = np.stack([img_array] * 3, axis=-1)
+    if img_array.shape[-1] == 4:  # RGBA
+        img_array = img_array[:, :, :3]
 
-    # Check
-    print(f"Shape after preprocessing: {img_array.shape}")
-    print(f"Range of value: {img_array.min():.2f} - {img_array.max():.2f}")
-    print(f"Data type: {img_array.dtype}")
-
+    img_array = tf.keras.applications.efficientnet.preprocess_input(img_array)
+    img_array = np.expand_dims(img_array, axis=0)
     return img_array
-# # Test image preprocessing
-# test = Image.open("test_img.png")
-# processed = process_img(test)
-# print(processed.shape)
 
 @app.route('/RealWaste')
 def RealWaste():
