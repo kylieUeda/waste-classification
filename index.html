@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheat Plant Classification</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f4ea;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+
+    header h1 {
+      color: #2b7a0b;
+    }
+
+    .upload-section {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #a8d5a2;
+      border-radius: 10px;
+      background-color: #f0fff4;
+      display: inline-block;
+    }
+
+    .upload-label, .upload-btn {
+      background-color: #2b7a0b;
+      color: white;
+      padding: 10px 15px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .upload-label:hover, .upload-btn:hover {
+      background-color: #1e5007;
+    }
+
+    #preview {
+      margin-top: 10px;
+      max-width: 300px;
+      max-height: 300px;
+      border: 2px solid #a8d5a2;
+      border-radius: 5px;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #2b7a0b;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #d0efd0;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Real Waste Classification</h1>
+    <p>Upload an image to classify its condition</p>
+  </header>
+
+  <div class="upload-section">
+    <label for="imageInput" class="upload-label">Choose Image</label>
+    <input type="file" id="imageInput" accept="image/*" style="display:none;">
+    <button id="classifyBtn" class="upload-btn">Classify</button>
+    <div>
+      <img id="preview" style="display:none;">
+    </div>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    // Add Flask API
+    const API_URL = 'http://localhost:5000'
+    const preview = document.getElementById("preview");
+    const resultDiv = document.getElementById("result");
+    const classifyBtn = document.getElementById("classifyBtn")
+    let selectedFile;
+
+    const categories = [
+      'Rust', 'Pests', 'Mildew', 'Blight_Spot',
+      'Smut_Rot', 'Fusarium_Blast', 'Healthy'
+    ];
+
+    // Preview image
+    document.getElementById("imageInput").addEventListener("change", (event) => {
+      selectedFile = event.target.files[0];
+      if (!selectedFile) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = "block";
+        resultDiv.innerHTML = "";
+      };
+      reader.readAsDataURL(selectedFile);
+    });
+
+    // Classify image
+    classifyBtn.addEventListener("click", async () => {
+      if (!selectedFile) {
+        resultDiv.innerHTML = '<span style="color:red;"> Please select an image.</span>';
+        return;
+      }
+
+      classifyBtn.disabled = true;
+      classifyBtn.textContent = "Classifying ... ";
+
+      const formData = new FormData();
+      formData.append('image', selectedFile)
+
+      try {
+        const response = await fetch(`${API_URL}/predict`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) throw new Error('Classification Failed ;-;');
+
+        const data = await response.json();
+
+
+        // Display Results
+        let html = `<h3>Predicted:\n ${data.label}</h3>`;
+        html += `<p>Confidence: ${(data.confidence * 100).toFixed(2)}%</p>`;
+
+        resultDiv.innerHTML = html;
+
+      } catch (err) {
+        resultDiv.innerHTML = `<span style="color:red;">Error: ${err.message}. \nMake sure Flask is running!</span>`;
+      } finally {
+        classifyBtn.disabled = false;
+        classifyBtn.textContent = "Classify";
+      }
+    });
+  </script>
+</body>
+</html>
