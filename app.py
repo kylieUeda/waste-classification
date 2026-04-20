@@ -18,16 +18,16 @@ MODEL_PATH = 'waste_ENB0.keras'
 model = None
 
 CLASS_NAMES = ['Vegetation',
-               'Textile Trash',
-               'Glass',
-               'Plastic_Transparent',
-               'Plastic_Opaque',
-               'Paper',
-               'Cardboard',
-               'Metal',
-               'Miscellaneous Trash',
-               'Food Organics'
-               ]
+            'Textile Trash',
+            'Glass',
+            'Plastic_Transparent',
+            'Plastic_Opaque',
+            'Paper',
+            'Cardboard',
+            'Metal',
+            'Miscellaneous Trash',
+            'Food Organics'
+            ]
 
 # Function to load model
 def load_model():
