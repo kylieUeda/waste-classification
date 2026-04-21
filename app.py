@@ -10,6 +10,8 @@ import numpy as np
 from PIL import Image
 import io
 import os
+from ultralytics import YOLO
+import cv2
 
 app = Flask(__name__)
 CORS(app) # -> make it accessible from browsers
@@ -40,6 +42,14 @@ def load_model():
         print(f"output: {model.output_shape}")
     except Exception as e:
         print(f"Error!: {e}")
+
+# Load YOLO model
+yolo_model = None
+
+def load_yolo():
+    global yolo_model
+    yolo_model = YOLO('yolov8n.pt') # automatically download
+    print("YOLO loaded!")
 
 def process_img(image):
     img = image.resize((224, 224))
@@ -117,7 +127,48 @@ def predict():
         
         except Exception as e:
             return jsonify({'error': f'Prediction Error: {str(e)}'}), 500
+        
+@app.route('/detect', methods=['POST'])
+def detect():
+    if model is None or yolo_model is None:
+        return jsonify({'error': 'Models not loaded'}), 500
+    
+    try:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image'}), 400
+
+        file = request.files['image']
+        image = Image.open(io.BytesIO(file.read())).convert('RGB')
+        img_array = np.array(image)
+
+        # Detect with YOLO
+        results = yolo_model(img_array, classes=[0, 24, 25, 26, 28, 39, 40, 41, 45, 56, 57, 58, 59, 60, 62, 63, 64, 67, 73, 74, 76])
+        
+        detections = []
+        for box in results[0].boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            
+            # Get bounding box and classify with EfficientNetB7
+            cropped = image.crop((x1, y1, x2, y2))
+            processed = process_img(cropped)
+            pred = model.predict(processed)
+            class_idx = int(np.argmax(pred[0]))
+            confidence = float(pred[0][class_idx])
+            
+            detections.append({
+                'box': [x1, y1, x2, y2],
+                'label': CLASS_NAMES[class_idx],
+                'confidence': confidence,
+                'yolo_confidence': float(box.conf[0])
+            })
+
+        return jsonify({'detections': detections})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     load_model()
+    load_yolo()
     app.run(debug=True, host = '0.0.0.0', port = 5000)
