@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RealWaste Classification</title>
+    <title>EcoSort</title>
     <link rel="stylesheet" href="style.css">
 
         <style>
@@ -137,7 +137,88 @@
         border-radius: 99px;
         transition: width 0.5s ease;
     }
+    
+    .facts-section {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        animation: fadeUp 0.4s ease both;
+    }
 
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fact-card {
+        border-radius: 10px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+    }
+
+    .fact-card.impact   { background: #e8f4fd; }
+    .fact-card.insight  { background: #eaf4ec; border-color: #a8d5b0; }
+    .fact-card.scenario { background: #fdf6e8; border-color: #e0cc8a; }
+
+    .fact-heading {
+        font-size: 0.7rem;
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .fact-card.impact   .fact-heading { color: var(--blue-mid); }
+    .fact-card.insight  .fact-heading { color: #2e7d45; }
+    .fact-card.scenario .fact-heading { color: #9a6d00; }
+
+    .fact-card ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .fact-card ul li {
+        font-size: 0.875rem;
+        color: var(--text);
+        padding-left: 14px;
+        position: relative;
+        line-height: 1.45;
+    }
+
+    .fact-card ul li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--muted);
+        font-size: 0.75rem;
+        top: 1px;
+    }
+
+    .fact-card p {
+        font-size: 0.875rem;
+        color: var(--text);
+        line-height: 1.5;
+        padding-left: 14px;
+        position: relative;
+    }
+
+.fact-card p::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--muted);
+        font-size: 0.75rem;
+        top: 2px;
+    }
     .error-msg {
         color: var(--error);
         font-size: 0.9rem;
@@ -158,8 +239,9 @@
 <body>
 
     <header>
-    <h1>Real Waste Classification</h1>
-    <p>Upload an image to identify the type of waste</p>
+    <h1>✨🌎♻️ EcoSort 🌱🗑️✨</h1>
+    <p>EcoSort is an AI-powered waste classification system that identifies waste types from images and explains their environmental impact to promote smarter, more sustainable disposal decisions.</p> 
+    <p>It addressed the growing need for accurate waste sorting, which is critical for reducing landfill pollution and methane emissions.</p>
     </header>
 
 <div class="main-card">
@@ -183,6 +265,142 @@
     <script>
     // Add Flask API
     const API_URL = 'http://127.0.0.1:5000'
+    const FACTS = {
+    'Cardboard': {
+        impact: [
+            'Recycled: reduces demand for new wood pulp and saves trees',
+            'Only recyclable if clean (no major contamination)',
+            'Landfilled: takes up space and wastes reusable material'
+        ],
+        insight: [
+            'Recycling cardboard uses significantly less energy and water than producing new cardboard',
+            'Cardboard fibers can only be recycled a limited number of times before degrading'
+        ],
+        scenario: 'If greasy cardboard is recycled, it can contaminate entire batches, causing more waste overall.'
+    },
+    'Food Organics': {
+        impact: [
+            'Landfilled: decomposes without oxygen and produces methane (a very strong greenhouse gas)',
+            'Composted: decomposes naturally and returns nutrients to soil'
+        ],
+        insight: [
+            'Methane has about 28–34× the warming impact of CO₂ over 100 years',
+            'Food waste is one of the largest contributors to landfill methane emissions'
+        ],
+        scenario: 'If 20 out of 100 items like this are misclassified, those 20 produce methane instead of being safely composted.'
+    },
+    'Glass': {
+        impact: [
+            'Can be recycled infinitely without losing quality',
+            'Landfilled: remains unchanged for extremely long periods'
+        ],
+        insight: [
+            'Recycling glass reduces the need for raw materials like sand and lowers energy use',
+            'Heavy weight makes transporting glass waste inefficient if not recycled'
+        ],
+        scenario: 'If sent to landfill, glass permanently loses the ability to be reused — forever.'
+    },
+    'Metal': {
+        impact: [
+            'Highly recyclable (especially aluminum and steel)',
+            'Landfilled: long-lasting waste and wasted resources'
+        ],
+        insight: [
+            'Recycling aluminum saves up to ~95% of the energy compared to producing new aluminum',
+            'Metals can be recycled repeatedly without major quality loss'
+        ],
+        scenario: 'Misclassifying metal as trash wastes enormous energy savings and increases resource extraction.'
+    },
+    'Miscellaneous Trash': {
+        impact: [
+            'Typically not recycled — goes to landfill or incineration'
+        ],
+        insight: [
+            'Mixed waste increases landfill volume and may release pollutants over time',
+            'Some items may take decades or longer to break down'
+        ],
+        scenario: 'If recyclable or compostable items are placed here, landfill waste increases unnecessarily.'
+    },
+    'Paper': {
+        impact: [
+            'Recyclable if clean and dry',
+            'Wet or food-contaminated paper becomes trash'
+        ],
+        insight: [
+            'Recycling paper reduces deforestation and water usage',
+            'Paper in landfills can produce methane under low-oxygen conditions'
+        ],
+        scenario: 'Contaminated paper in recycling can cause entire batches to be rejected and landfilled.'
+    },
+    'Plastic_Opaque': {
+        impact: [
+            'Sometimes recyclable depending on plastic type',
+            'Landfilled: persists for hundreds of years'
+        ],
+        insight: [
+            'Producing new plastic requires fossil fuels',
+            'Recycling plastic reduces energy use but is limited by sorting challenges'
+        ],
+        scenario: 'If sent to compost, opaque plastic contaminates organic waste streams and disrupts processing.'
+    },
+    'Plastic_Transparent': {
+        impact: [
+            'More commonly recyclable than opaque plastics',
+            'Landfilled: long-term environmental persistence'
+        ],
+        insight: [
+            'Clear plastics often have higher recycling value',
+            'Recycling reduces demand for new raw plastic production'
+        ],
+        scenario: 'Misclassification reduces recovery of valuable recyclable materials and increases extraction demand.'
+    },
+    'Textile Trash': {
+        impact: [
+            'Landfilled: slow decomposition (especially synthetic fabrics)',
+            'Some textiles can be reused, donated, or repurposed'
+        ],
+        insight: [
+            'Synthetic fibers like polyester can take decades to break down',
+            'Textile waste contributes significantly to landfill volume'
+        ],
+        scenario: 'Reusable clothing sent to landfill results in permanent material loss that could have served others.'
+    },
+    'Vegetation': {
+        impact: [
+            'Composted: returns nutrients to soil',
+            'Landfilled: decomposes and produces methane (similar to food waste, but slower)'
+        ],
+        insight: [
+            'Organic yard waste is a major component of composting systems',
+            'Proper processing supports soil health and reduces need for synthetic fertilizers'
+        ],
+        scenario: 'If sent to landfill, vegetation contributes to unnecessary greenhouse gas emissions instead of enriching soil.'
+    }
+};
+
+function buildFactsHTML(label) {
+    const facts = FACTS[label];
+    if (!facts) return '';
+
+    const impactItems = facts.impact.map(i => `<li>${i}</li>`).join('');
+    const insightItems = facts.insight.map(i => `<li>${i}</li>`).join('');
+
+    return `
+    <div class="facts-section">
+        <div class="fact-card impact">
+            <div class="fact-heading">⚡ Immediate Impact</div>
+            <ul>${impactItems}</ul>
+        </div>
+        <div class="fact-card insight">
+            <div class="fact-heading">🌱 Environmental Insight</div>
+            <ul>${insightItems}</ul>
+        </div>
+        <div class="fact-card scenario">
+            <div class="fact-heading">⚠️ Misclassification Scenario</div>
+            <p>${facts.scenario}</p>
+        </div>
+    </div>`;
+}
     const preview = document.getElementById("preview");
     const placeholder = document.getElementById("placeholder");
     const resultDiv = document.getElementById("result");
@@ -234,6 +452,7 @@
                 <div class="confidence-bar" style="width: ${pct}%"></div>
                 </div>
             </div>
+            ${buildFactsHTML(data.label)}
         `;
 
         } catch (err) {
