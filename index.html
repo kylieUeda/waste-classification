@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -462,6 +462,523 @@ function buildFactsHTML(label) {
             classifyBtn.textContent = "Classify";
         }
     });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>EcoSort</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg: #f0f4f8;
+        --card: #ffffff;
+        --border: #b8cfe0;
+        --blue-dark: #0d4a7a;
+        --blue-mid: #1a6faa;
+        --blue-light: #daeaf7;
+        --accent: #2e7fc2;
+        --text: #0d2136;
+        --muted: #5a7a96;
+        --error: #c0392b;
+        --mono: 'DM Mono', monospace;
+        --sans: 'DM Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: var(--sans);
+        background-color: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 16px;
+        background-image:
+            radial-gradient(circle at 10% 20%, #cce0f544 0%, transparent 50%),
+            radial-gradient(circle at 90% 80%, #b8d4ee33 0%, transparent 50%);
+    }
+
+    header { text-align: center; margin-bottom: 24px; }
+
+    .badge {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--blue-light);
+        border: 1px solid var(--border);
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+    }
+
+    header h1 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        letter-spacing: -0.02em;
+    }
+
+    header p { margin-top: 5px; color: var(--muted); font-size: 0.9rem; }
+
+    /* Tab navigation */
+    .tabs {
+        display: flex;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 4px;
+        gap: 4px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .tab-btn {
+        flex: 1;
+        font-family: var(--sans);
+        font-size: 0.88rem;
+        font-weight: 500;
+        padding: 9px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: transparent;
+        color: var(--muted);
+        transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+        background: var(--blue-dark);
+        color: white;
+    }
+
+    .tab-btn:hover:not(.active) { background: var(--blue-light); color: var(--blue-dark); }
+
+    /* Panels */
+    .panel { display: none; width: 100%; max-width: 600px; }
+    .panel.active { display: block; }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 24px #0d4a7a10;
+    }
+
+    .btn {
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background-color: var(--blue-dark); color: white; }
+    .btn-primary:hover { background-color: #093a61; }
+    .btn-secondary { background-color: var(--blue-light); color: var(--blue-dark); border: 1px solid var(--border); }
+    .btn-secondary:hover { background-color: #c0d9ee; }
+    .btn-danger { background-color: #fdecea; color: var(--error); border: 1px solid #f5c6c2; }
+    .btn-danger:hover { background-color: #fad4d0; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Upload panel */
+    .upload-row { display: flex; gap: 10px; margin-bottom: 16px; }
+
+    .preview-box {
+        width: 100%;
+        min-height: 220px;
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: var(--bg);
+    }
+
+    .preview-placeholder { text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .preview-placeholder span { display: block; font-size: 2rem; margin-bottom: 8px; }
+
+    #preview {
+        width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        display: none;
+        border-radius: 8px;
+    }
+
+    #result { margin-top: 16px; }
+
+    .result-card {
+        background: var(--blue-light);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+    }
+
+    .result-label {
+        font-size: 0.72rem;
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+
+    .result-class { font-size: 1.4rem; font-weight: 700; color: var(--blue-dark); }
+    .result-confidence { margin-top: 5px; font-size: 0.88rem; color: var(--muted); }
+
+    .confidence-bar-wrap {
+        margin-top: 8px;
+        background: #b8d4ee;
+        border-radius: 99px;
+        height: 6px;
+        overflow: hidden;
+    }
+
+    .confidence-bar {
+        height: 100%;
+        background: var(--blue-mid);
+        border-radius: 99px;
+        transition: width 0.5s ease;
+    }
+
+    /* Camera panel */
+    .cam-controls { display: flex; gap: 10px; margin-bottom: 16px; }
+
+    .video-wrap {
+        position: relative;
+        width: 100%;
+        background: #0d2136;
+        border-radius: 10px;
+        overflow: hidden;
+        aspect-ratio: 4/3;
+    }
+
+    #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    #canvas {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+    .dot.active { background: #27ae60; animation: pulse 1.5s infinite; }
+    .dot.processing { background: #f39c12; animation: pulse 0.5s infinite; }
+    .dot.error { background: var(--error); }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    #detections { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+
+    .detection-item {
+        background: var(--blue-light);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .detection-label { font-weight: 500; color: var(--blue-dark); font-size: 0.92rem; min-width: 140px; }
+    .detection-conf { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+    .conf-bar-wrap { flex: 1; background: #b8d4ee; border-radius: 99px; height: 4px; overflow: hidden; }
+    .conf-bar { height: 100%; background: var(--blue-mid); border-radius: 99px; transition: width 0.3s ease; }
+
+    .no-detections { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 12px; }
+
+    .error-msg {
+        color: var(--error);
+        font-size: 0.88rem;
+        padding: 10px 14px;
+        background: #fdecea;
+        border: 1px solid #f5c6c2;
+        border-radius: 8px;
+    }
+
+    footer {
+        margin-top: 28px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+    }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="badge">♻ ML Classifier</div>
+        <h1>Real Waste Classification</h1>
+        <p>Classify waste by upload or live camera</p>
+    </header>
+
+    <!-- Tab buttons -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('upload')">📁 Upload Image</button>
+        <button class="tab-btn" onclick="switchTab('camera')">📷 Live Camera</button>
+    </div>
+
+    <!-- Upload panel -->
+    <div class="panel active" id="panel-upload">
+        <div class="card">
+            <div class="upload-row">
+                <label for="imageInput" class="btn btn-secondary">Choose Image</label>
+                <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                <button id="classifyBtn" class="btn btn-primary">Classify</button>
+            </div>
+
+            <div class="preview-box">
+                <div class="preview-placeholder" id="placeholder">
+                    <span>🗑️</span>
+                    No image selected
+                </div>
+                <img id="preview" alt="Preview">
+            </div>
+
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <!-- Camera panel -->
+    <div class="panel" id="panel-camera">
+        <div class="card">
+            <div class="cam-controls">
+                <button id="startBtn" class="btn btn-primary" onclick="startCamera()">Start Camera</button>
+                <button id="stopBtn" class="btn btn-danger" onclick="stopCamera()" disabled>Stop</button>
+            </div>
+
+            <div class="video-wrap">
+                <video id="video" autoplay playsinline muted></video>
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="status-bar">
+                <div class="dot" id="statusDot"></div>
+                <span id="statusText">Camera off</span>
+            </div>
+
+            <div id="detections"></div>
+        </div>
+    </div>
+
+    <footer>YOLOv8 + EfficientNetB7 · RealWaste Dataset · 10 classes</footer>
+
+    <script>
+    const API_URL = 'http://127.0.0.1:5000';
+
+    // ── Tab switching ──────────────────────────────────────────
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', (i === 0) === (tab === 'upload'));
+        });
+        document.getElementById('panel-upload').classList.toggle('active', tab === 'upload');
+        document.getElementById('panel-camera').classList.toggle('active', tab === 'camera');
+        if (tab === 'upload') stopCamera();
+    }
+
+    // ── Upload & Classify ──────────────────────────────────────
+    const preview = document.getElementById('preview');
+    const placeholder = document.getElementById('placeholder');
+    const resultDiv = document.getElementById('result');
+    const classifyBtn = document.getElementById('classifyBtn');
+    let selectedFile;
+
+    document.getElementById('imageInput').addEventListener('change', (event) => {
+        selectedFile = event.target.files[0];
+        if (!selectedFile) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+            resultDiv.innerHTML = '';
+        };
+        reader.readAsDataURL(selectedFile);
+    });
+
+    classifyBtn.addEventListener('click', async () => {
+        if (!selectedFile) {
+            resultDiv.innerHTML = '<div class="error-msg">Please select an image first.</div>';
+            return;
+        }
+        classifyBtn.disabled = true;
+        classifyBtn.textContent = 'Classifying…';
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+
+        try {
+            const response = await fetch(`${API_URL}/predict`, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error('Classification failed');
+            const data = await response.json();
+            const pct = (data.confidence * 100).toFixed(1);
+            resultDiv.innerHTML = `
+                <div class="result-card">
+                    <div class="result-label">Predicted Class</div>
+                    <div class="result-class">${data.label}</div>
+                    <div class="result-confidence">Confidence: ${pct}%</div>
+                    <div class="confidence-bar-wrap">
+                        <div class="confidence-bar" style="width:${pct}%"></div>
+                    </div>
+                </div>`;
+        } catch (err) {
+            resultDiv.innerHTML = `<div class="error-msg">Error: ${err.message}. Make sure Flask is running.</div>`;
+        } finally {
+            classifyBtn.disabled = false;
+            classifyBtn.textContent = 'Classify';
+        }
+    });
+
+    // ── Live Camera & Detection ────────────────────────────────
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const detectionsDiv = document.getElementById('detections');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    let stream = null;
+    let detecting = false;
+    let intervalId = null;
+
+    const CLASS_COLORS = {
+        'Cardboard': '#1a6faa', 'Food Organics': '#27ae60',
+        'Glass': '#8e44ad', 'Metal': '#d35400',
+        'Miscellaneous Trash': '#7f8c8d', 'Paper': '#2980b9',
+        'Plastic_Opaque': '#e74c3c', 'Plastic_Transparent': '#e67e22',
+        'Textile Trash': '#c0392b', 'Vegetation': '#16a085',
+    };
+
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+            });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+            };
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            setStatus('active', 'Camera active — detecting every 2s');
+            intervalId = setInterval(runDetection, 2000);
+        } catch (err) {
+            setStatus('error', 'Camera access denied');
+            detectionsDiv.innerHTML = `<div class="error-msg">Could not access camera: ${err.message}</div>`;
+        }
+    }
+
+    function stopCamera() {
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        if (intervalId) { clearInterval(intervalId); intervalId = null; }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        detectionsDiv.innerHTML = '';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        setStatus('', 'Camera off');
+    }
+
+    async function runDetection() {
+        if (detecting || !stream) return;
+        detecting = true;
+        setStatus('processing', 'Detecting...');
+        try {
+            const offscreen = document.createElement('canvas');
+            offscreen.width = video.videoWidth;
+            offscreen.height = video.videoHeight;
+            offscreen.getContext('2d').drawImage(video, 0, 0);
+            const blob = await new Promise(res => offscreen.toBlob(res, 'image/jpeg', 0.8));
+            const formData = new FormData();
+            formData.append('image', blob, 'frame.jpg');
+
+            const response = await fetch(`${API_URL}/detect`, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error('Detection failed');
+            const data = await response.json();
+            drawBoxes(data.detections);
+            showDetections(data.detections);
+            setStatus('active', `Found ${data.detections.length} object(s)`);
+        } catch (err) {
+            setStatus('error', 'Error: ' + err.message);
+        } finally {
+            detecting = false;
+        }
+    }
+
+    function drawBoxes(detections) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        detections.forEach(det => {
+            const [x1, y1, x2, y2] = det.box;
+            const color = CLASS_COLORS[det.label] || '#1a6faa';
+            const pct = (det.confidence * 100).toFixed(0);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+            const label = `${det.label} ${pct}%`;
+            ctx.font = 'bold 13px DM Sans, sans-serif';
+            const textW = ctx.measureText(label).width + 10;
+            ctx.fillStyle = color;
+            ctx.fillRect(x1, y1 - 24, textW, 24);
+            ctx.fillStyle = 'white';
+            ctx.fillText(label, x1 + 5, y1 - 7);
+        });
+    }
+
+    function showDetections(detections) {
+        if (detections.length === 0) {
+            detectionsDiv.innerHTML = '<div class="no-detections">No waste detected in frame</div>';
+            return;
+        }
+        detectionsDiv.innerHTML = detections.map(det => {
+            const pct = (det.confidence * 100).toFixed(1);
+            const color = CLASS_COLORS[det.label] || '#1a6faa';
+            return `
+                <div class="detection-item">
+                    <div class="detection-label" style="color:${color}">${det.label}</div>
+                    <div class="conf-bar-wrap">
+                        <div class="conf-bar" style="width:${pct}%;background:${color}"></div>
+                    </div>
+                    <div class="detection-conf">${pct}%</div>
+                </div>`;
+        }).join('');
+    }
+
+    function setStatus(type, text) {
+        statusDot.className = 'dot' + (type ? ' ' + type : '');
+        statusText.textContent = text;
+    }
     </script>
 </body>
 </html>
