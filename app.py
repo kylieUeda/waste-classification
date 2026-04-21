@@ -14,20 +14,21 @@ import os
 app = Flask(__name__)
 CORS(app) # -> make it accessible from browsers
 
-MODEL_PATH = 'waste_ENB0.keras'
+MODEL_PATH = 'waste_ENB7.keras'
 model = None
 
-CLASS_NAMES = ['Vegetation',
-            'Textile Trash',
-            'Glass',
-            'Plastic_Transparent',
-            'Plastic_Opaque',
-            'Paper',
-            'Cardboard',
-            'Metal',
-            'Miscellaneous Trash',
-            'Food Organics'
-            ]
+CLASS_NAMES = [
+    'Cardboard',
+    'Food Organics',
+    'Glass',
+    'Metal',
+    'Miscellaneous Trash',
+    'Paper',
+    'Plastic_Opaque',
+    'Plastic_Transparent',
+    'Textile Trash',
+    'Vegetation',
+]
 
 # Function to load model
 def load_model():
@@ -42,14 +43,14 @@ def load_model():
 
 def process_img(image):
     img = image.resize((224, 224))
-    img_array = np.array(img).astype(np.float32)
+    img_array = np.array(img)
 
-    if img_array.ndim == 2:  # grayscale
+    if img_array.ndim == 2:
         img_array = np.stack([img_array] * 3, axis=-1)
-    if img_array.shape[-1] == 4:  # RGBA
+    if img_array.shape[-1] == 4:
         img_array = img_array[:, :, :3]
 
-    img_array = tf.keras.applications.efficientnet.preprocess_input(img_array)
+    img_array = img_array.astype(np.float32)
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
@@ -75,13 +76,8 @@ def predict():
             processedImg = process_img(image)
 
             # Predict (Obtain logits)
-            logits = model.predict(processedImg)
-            print(f"Logits: {logits[0]}")
-
-            # Convert logits into probability
-            pred = tf.nn.softmax(logits).numpy()
+            pred = model.predict(processedImg)
             print(f"Probability: {pred[0]}")
-            print(f"Sum: {pred[0].sum():.6f}")
 
             # Get predicted class
             pred_class_index = int(np.argmax(pred[0]))
